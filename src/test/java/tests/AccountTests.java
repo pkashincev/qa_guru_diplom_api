@@ -262,40 +262,6 @@ public class AccountTests extends BaseTest {
         );
     }
 
-    @Disabled
-    @Tag("NEGATIVE")
-    @Story("Удаление пользователя")
-    @Test
-    @DisplayName("Удаление несуществующего пользователя")
-    void deleteNonExistentUserTest() {
-        String userName = data.getUserName();
-        String password = data.getPassword();
-        RegistrationResponseModel registrationResponse = step("Создать нового пользователя", () ->
-                RegistrationApi.registerUser(userName, password)
-        );
-        GenerateTokenResponseModel generateTokenResponse = step("Сгенерировать для пользователя токен доступа", () ->
-                RegistrationApi.generateToken(userName, password)
-        );
-        ErrorResponseModel errorResponse = step("Выполнить запрос на удаление несуществующего пользователя", () ->
-                given(noBodyRequestSpec)
-                        .header("Authorization", "Bearer " + generateTokenResponse.getToken())
-                        .when()
-                        .delete("/Account/v1/User/" + data.getRandomUUID())
-                        .then()
-                        .spec(getResponseSpecByStatusCode(200))
-                        .extract().as(ErrorResponseModel.class)
-        );
-        step("Проверить значение атрибута code в ответе с ошибкой", () -> {
-            assertThat(errorResponse.getCode()).isEqualTo("1207");
-        });
-        step("Проверить значение атрибута message в ответе с ошибкой", () -> {
-            assertThat(errorResponse.getMessage()).isEqualTo("User Id not correct!");
-        });
-        step("Удалить созданного пользователя", () ->
-                RegistrationApi.deleteUser(registrationResponse.getUserId(), generateTokenResponse.getToken())
-        );
-    }
-
     @Tag("NEGATIVE")
     @Story("Удаление пользователя")
     @Test
