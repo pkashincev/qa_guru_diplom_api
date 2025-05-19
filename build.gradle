@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'io.freefair.lombok' version '8.12.1'
+    id 'io.qameta.allure' version '2.12.0'
+}
+
+group = 'ru.kashintsev'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+def allureVersion = "2.21.0"
+def restAssuredVersion = "5.5.0"
+
+allure {
+    report {
+        version.set(allureVersion)
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set(allureVersion)
+            }
+        }
+    }
+}
+
+dependencies {
+    testImplementation(
+            "org.junit.jupiter:junit-jupiter:5.11.4",
+            "io.rest-assured:rest-assured:$restAssuredVersion",
+            "io.rest-assured:json-schema-validator:$restAssuredVersion",
+            "io.qameta.allure:allure-rest-assured:$allureVersion",
+            "com.github.javafaker:javafaker:1.0.2",
+            "org.assertj:assertj-core:3.27.3",
+            "org.slf4j:slf4j-simple:2.0.16"
+    )
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task all(type: Test) {
+    useJUnitPlatform()
+}
+
+task positive(type: Test) {
+    useJUnitPlatform {
+        includeTags("POSITIVE")
+    }
+}
+
+task negative(type: Test) {
+    useJUnitPlatform {
+        includeTags("NEGATIVE")
+    }
+}
