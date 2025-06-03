@@ -1,6 +1,8 @@
 package api;
 
-import models.*;
+import models.GenerateTokenResponseModel;
+import models.LoginRequestModel;
+import models.RegistrationResponseModel;
 
 import static io.restassured.RestAssured.given;
 import static specs.DemoqaSpecs.*;
